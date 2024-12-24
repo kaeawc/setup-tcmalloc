@@ -9,22 +9,22 @@ runs:
   using: "composite"
   steps:
 
-    # - name: "Restore tcmalloc"
-    #   if: runner.os == 'Linux'
-    #   id: cache-tcmalloc
-    #   uses: actions/cache/restore@v4
-    #   with:
-    #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
-    #     key: v7-${{ runner.os }}-tcmalloc
+    - name: "Restore tcmalloc"
+      if: runner.os == 'Linux'
+      id: cache-tcmalloc
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
+        key: v7-${{ runner.os }}-tcmalloc
 
-    # - name: "Relocate tcmalloc to expected directory"
-    #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit == 'true' }}
-    #   shell: bash
-    #   run: |
-    #     if [ "${{ runner.os }}" == "Linux" ]; then
-    #       mkdir -p /usr/lib/x86_64-linux-gnu
-    #       sudo cp /tmp/libtcmalloc_minimal.so.4 /usr/lib/x86_64-linux-gnu/
-    #     fi
+    - name: "Relocate tcmalloc to expected directory"
+      if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit == 'true' }}
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "Linux" ]; then
+          mkdir -p /usr/lib/x86_64-linux-gnu
+          sudo cp /tmp/libtcmalloc_minimal.so.4 /usr/lib/x86_64-linux-gnu/
+        fi
 
     - name: "Download & install tcmalloc"
       if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
@@ -44,18 +44,12 @@ runs:
           cp /usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 /tmp/
         fi
 
-    # - name: "Save tcmalloc"
-    #   uses: actions/cache/save@v4
-    #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
-    #   with:
-    #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
-    #     key: v7-${{ runner.os }}-tcmalloc
-
-    # - name: "Remove download directory"
-    #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
-    #   shell: bash
-    #   run: |
-    #     rm -rf tcmalloc
+    - name: "Save tcmalloc"
+      uses: actions/cache/save@v4
+      if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
+      with:
+        path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
+        key: v7-${{ runner.os }}-tcmalloc
 
 branding:
   icon: "cpu"
