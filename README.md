@@ -20,18 +20,13 @@ jobs:
     # Add typical environment setup steps for node/java/python etc before tcmalloc
     
     - name: Set up tcmalloc
-      uses: kaeawc/setup-tcmalloc@v0.0.3
+      uses: kaeawc/setup-tcmalloc@v0.0.1
 
     # Any processes run (bash, java, golang, python, etc) will benefit from using tcmalloc automatically.
     - name: Build Application
       run: make
     
 ```
-
-## Inputs
-| Argument | Description | Default | Required |
-|----------|-------------|---------|---------|
-| tcmalloc-version    | The version of tcmalloc to be used | 5.3.0 | yes |
 
 ## Verification
 
