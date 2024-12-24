@@ -31,7 +31,7 @@ echo "Looking in /proc/$PID/maps"
 find "/proc/$PID/maps"
 echo ""
 
-TCMALLOC_REF=$(lsof -p "$PID" | grep "libtcmalloc.so")
+TCMALLOC_REF=$(lsof -p "$PID" | grep "libtcmalloc_minimal.so")
 
 if [ -z "$TCMALLOC_REF" ]; then
   echo "No tcmalloc references found for process '$PROCESS_NAME' (PID: $PID)."
