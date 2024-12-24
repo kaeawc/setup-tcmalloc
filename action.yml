@@ -14,7 +14,7 @@ runs:
     #   id: cache-tcmalloc
     #   uses: actions/cache/restore@v4
     #   with:
-    #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc.so' }}
+    #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
     #     key: v7-${{ runner.os }}-tcmalloc
 
     # - name: "Relocate tcmalloc to expected directory"
@@ -22,8 +22,8 @@ runs:
     #   shell: bash
     #   run: |
     #     if [ "${{ runner.os }}" == "Linux" ]; then
-    #       mkdir -p /usr/local/lib
-    #       sudo cp /tmp/libtcmalloc.so /usr/local/lib/
+    #       mkdir -p /usr/lib/x86_64-linux-gnu
+    #       sudo cp /tmp/libtcmalloc_minimal.so.4 /usr/lib/x86_64-linux-gnu/
     #     fi
 
     - name: "Download & install tcmalloc"
@@ -39,16 +39,16 @@ runs:
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Linux" ]; then
-          echo 'LD_PRELOAD=/usr/local/lib/libtcmalloc.so' >> $GITHUB_ENV
+          echo 'LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4' >> $GITHUB_ENV
           mkdir -p /tmp
-          cp /usr/local/lib/libtcmalloc.so /tmp/
+          cp /usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4 /tmp/
         fi
 
     # - name: "Save tcmalloc"
     #   uses: actions/cache/save@v4
     #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
     #   with:
-    #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc.so' }}
+    #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
     #     key: v7-${{ runner.os }}-tcmalloc
 
     # - name: "Remove download directory"
