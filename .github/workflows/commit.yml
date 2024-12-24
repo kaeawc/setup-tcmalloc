@@ -1,0 +1,48 @@
+name: "Commit"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Background Process without tcmalloc
+        run: |
+          nohup bash -c 'while true; do sleep 10; done' > nohup.out 2> nohup.err < /dev/null &
+          echo $! > background_process_without_tcmalloc.pid
+
+      - name: Run tcmalloc action
+        uses: ./
+
+      - name: Start Background Process with Infinite Loop
+        run: |
+          nohup bash -c 'while true; do sleep 10; done' > nohup.out 2> nohup.err < /dev/null &
+          echo $! > background_process.pid
+
+      - name: Check tcmalloc Usage
+        run: |
+          # Load the PID of the background process
+          export PID_WITHOUT=$(cat background_process_without_tcmalloc.pid)
+          echo "PID_WITHOUT of background process without tcmalloc is $PID_WITHOUT"
+          export PID_WITH=$(cat background_process.pid)
+          echo "PID_WITH of background process with tcmalloc is $PID_WITH"
+          ./scripts/linux/verify.sh "$PID_WITH"
+
+      - name: Cleanup Background Process
+        run: |
+          # Kill the background process if it is still running
+          if [ -f background_process.pid ]; then
+            kill $(cat background_process.pid) || true
+            rm background_process.pid
+          fi
+          if [ -f background_process_without_tcmalloc.pid ]; then
+            kill $(cat background_process_without_tcmalloc.pid) || true
+            rm background_process_without_tcmalloc.pid
+          fi
