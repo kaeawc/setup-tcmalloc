@@ -2,11 +2,7 @@
 name: "setup-tcmalloc"
 description: "An action to download, install, and cache tcmalloc on Linux runners"
 author: "Jason Pearson"
-inputs:
-  tcmalloc-version:
-    description: "Version of tcmalloc to use"
-    required: "true"
-    default: "5.3.0"
+inputs: {}
 outputs: {}
 
 runs:
@@ -19,7 +15,7 @@ runs:
     #   uses: actions/cache/restore@v4
     #   with:
     #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc.so' }}
-    #     key: v7-${{ runner.os }}-tcmalloc-${{ inputs.tcmalloc-version }}
+    #     key: v7-${{ runner.os }}-tcmalloc
 
     # - name: "Relocate tcmalloc to expected directory"
     #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit == 'true' }}
@@ -53,13 +49,13 @@ runs:
     #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
     #   with:
     #     path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc.so' }}
-    #     key: v7-${{ runner.os }}-tcmalloc-${{ inputs.tcmalloc-version }}
+    #     key: v7-${{ runner.os }}-tcmalloc
 
     # - name: "Remove download directory"
     #   if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
     #   shell: bash
     #   run: |
-    #     rm -rf tcmalloc-${{ inputs.tcmalloc-version }}
+    #     rm -rf tcmalloc
 
 branding:
   icon: "cpu"
