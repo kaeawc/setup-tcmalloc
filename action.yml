@@ -9,13 +9,23 @@ runs:
   using: "composite"
   steps:
 
+    - name: "Detect platform"
+      if: runner.os == 'Linux'
+      id: platform
+      shell: bash
+      run: |
+        # Key the cache by distro release so a library from one Ubuntu
+        # version is never restored onto another.
+        . /etc/os-release
+        echo "tag=${ID}-${VERSION_ID}" >> "$GITHUB_OUTPUT"
+
     - name: "Restore tcmalloc"
       if: runner.os == 'Linux'
       id: cache-tcmalloc
       uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
-        key: v7-${{ runner.os }}-tcmalloc
+        key: v8-${{ runner.os }}-${{ steps.platform.outputs.tag }}-tcmalloc
 
     - name: "Relocate tcmalloc to expected directory"
       if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit == 'true' }}
@@ -31,7 +41,11 @@ runs:
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Linux" ]; then
-          sudo apt-get install google-perftools
+          # Install only the library package: google-perftools (the CLI tools)
+          # is no longer published on Ubuntu 26.04. Ubuntu 24.04+ ships the
+          # library as libtcmalloc-minimal4t64; 22.04 as libtcmalloc-minimal4.
+          sudo apt-get update
+          sudo apt-get install -y libtcmalloc-minimal4t64 || sudo apt-get install -y libtcmalloc-minimal4
         fi
 
     - name: "Configure LD_PRELOAD (or equivalent)"
@@ -49,7 +63,7 @@ runs:
       if: ${{ runner.os == 'Linux' && steps.cache-tcmalloc.outputs.cache-hit != 'true' }}
       with:
         path: ${{ runner.os == 'Linux' && '/tmp/libtcmalloc_minimal.so.4' }}
-        key: v7-${{ runner.os }}-tcmalloc
+        key: v8-${{ runner.os }}-${{ steps.platform.outputs.tag }}-tcmalloc
 
 branding:
   icon: "cpu"
